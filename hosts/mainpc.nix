@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, outputs, modulesPath, ... }:
+{ config, lib, pkgs, pkgs-unstable, inputs, outputs, modulesPath, ... }:
 let
   systemSettings = {
     system = "x86_64-linux";
@@ -36,14 +36,17 @@ in {
 
   #### Nvidia
   hardware = {
-    graphics.enable = true;
+    graphics = {
+      enable = true;
+      #      extraPackages = with pkgs-unstable; [ nvidia-vaapi-driver ];
+    };
     enableRedistributableFirmware = true;
     nvidia = {
       modesetting.enable = true;
       open = true;
       nvidiaSettings = true;
-      package = config.boot.kernelPackages.nvidiaPackages.latest;
-      forceFullCompositionPipeline = true;
+      package = config.boot.kernelPackages.nvidiaPackages.beta;
+      forceFullCompositionPipeline = false;
     };
   };
 

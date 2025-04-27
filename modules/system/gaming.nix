@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }: {
+{ config, lib, pkgs, pkgs-unstable, ... }: {
   options = { gaming.enable = lib.mkEnableOption "enables gaming"; };
 
   config = lib.mkIf config.gaming.enable {
@@ -8,7 +8,7 @@
 
     # Sunshine for streaming
     services.sunshine = {
-      package = pkgs.sunshine.override { cudaSupport = false; };
+      package = pkgs-unstable.sunshine; # .override { cudaSupport = false; };
       enable = true;
       autoStart = true;
       capSysAdmin = true;
