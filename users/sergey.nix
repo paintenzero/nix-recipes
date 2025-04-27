@@ -28,7 +28,7 @@ in {
     extraSpecialArgs = { inherit pkgs userSettings; };
 
     users.${userSettings.username} = { pkgs, ... }: {
-      imports = [ ./default.nix ../modules/rclone.nix ../modules/kitty.nix ];
+      imports = [ ./default.nix ];
       home = {
         username = userSettings.username;
         homeDirectory = "/home/${userSettings.username}";
@@ -38,6 +38,8 @@ in {
       gaming.enable = true;
       vscode.enable = true;
       messaging.enable = true;
+      kitty.enable = true;
+      rclone.enable = true;
       programs.bash.enable = true;
 
       programs.neovim.enable = true;

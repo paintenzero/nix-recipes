@@ -8,7 +8,7 @@
 
     # Sunshine for streaming
     services.sunshine = {
-      package = pkgs-unstable.sunshine; # .override { cudaSupport = false; };
+      package = pkgs-unstable.sunshine;
       enable = true;
       autoStart = true;
       capSysAdmin = true;
