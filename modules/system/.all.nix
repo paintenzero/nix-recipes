@@ -1,3 +1,11 @@
 { ... }: {
-  imports = [ ./build-essentials.nix ./gaming.nix ./cuda.nix ./ollama.nix ];
+  imports = [
+    ./build-essentials.nix
+    ./gaming.nix
+    ./nvidia.nix
+    ./cuda.nix
+    ./cuda.nix
+    ./ollama.nix
+    ./3dprint.nix
+  ];
 }

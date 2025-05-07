@@ -1,4 +1,5 @@
-{ config, lib, pkgs, pkgs-unstable, inputs, outputs, modulesPath, ... }:
+{ config, lib, pkgs, pkgs-unstable, unstable, inputs, outputs, modulesPath, ...
+}:
 let
   systemSettings = {
     system = "x86_64-linux";
@@ -14,6 +15,7 @@ in {
   boot.initrd.availableKernelModules =
     [ "nvme" "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
+  boot.kernelPackages = unstable.linuxPackages;
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
@@ -34,25 +36,15 @@ in {
   hardware.cpu.amd.updateMicrocode =
     lib.mkDefault config.hardware.enableRedistributableFirmware;
 
-  #### Nvidia
-  hardware = {
-    graphics = {
-      enable = true;
-      #      extraPackages = with pkgs-unstable; [ nvidia-vaapi-driver ];
-    };
-    enableRedistributableFirmware = true;
-    nvidia = {
-      modesetting.enable = true;
-      open = true;
-      nvidiaSettings = true;
-      package = config.boot.kernelPackages.nvidiaPackages.beta;
-      forceFullCompositionPipeline = false;
-    };
-  };
-
   ### Software
   boot.loader = {
-    systemd-boot.enable = true;
+    grub = {
+      enable = true;
+      devices = [ "nodev" ];
+      efiSupport = true;
+      useOSProber = true;
+    };
+    #    systemd-boot.enable = true;
     efi = {
       canTouchEfiVariables = true;
       efiSysMountPoint = "/boot";
@@ -99,28 +91,37 @@ in {
   services.openssh.enable = true;
   security.sudo.wheelNeedsPassword = false;
 
-  environment.systemPackages = with pkgs; [
-    vim
-    wget
-    curl
-    home-manager
-    git
-    htop
-    pciutils
-    lm_sensors
-    cachix
-  ];
+  environment.systemPackages = with pkgs;
+    [
+      vim
+      wget
+      curl
+      home-manager
+      git
+      htop
+      pciutils
+      lm_sensors
+      vulkan-tools
+      cachix
+      ripgrep
+      btop
+    ] ++ [ unstable.devenv unstable.libreoffice ];
 
   programs.appimage = {
     enable = true;
     binfmt = true;
   };
 
+  programs.direnv = {
+    enable = true;
+    enableBashIntegration = true;
+    package = unstable.direnv;
+  };
+
   programs.firefox.enable = true;
 
   services.xserver = {
     enable = true;
-    videoDrivers = [ "nvidia" ];
     xkb.layout = "us,ru";
     xkb.options = "grp:alt_shift_toggle";
   };
@@ -137,6 +138,26 @@ in {
 
   gaming.enable = true;
   ollama.enable = true;
+  nvidia.enable = true;
   cuda.enable = true;
+  threedprint.enable = true;
   services.tailscale.enable = true;
+
+  fonts.enableDefaultPackages = true;
+  fonts.enableGhostscriptFonts = true;
+  fonts.packages = with pkgs; [
+    nerdfonts
+    corefonts
+    vistafonts
+    noto-fonts
+    noto-fonts-cjk-sans
+    noto-fonts-emoji
+    liberation_ttf
+    fira-code
+    fira-code-symbols
+    mplus-outline-fonts.githubRelease
+    dina-font
+    proggyfonts
+  ];
+  fonts.fontconfig.enable = true;
 }

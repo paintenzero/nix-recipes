@@ -1,4 +1,4 @@
-{ pkgs, ... }@inputs:
+{ pkgs, pkgs-unstable, unstable, ... }@inputs:
 let
   userSettings = {
     username = "sergey";
@@ -25,7 +25,7 @@ in {
   };
 
   home-manager = {
-    extraSpecialArgs = { inherit pkgs userSettings; };
+    extraSpecialArgs = { inherit pkgs pkgs-unstable unstable userSettings; };
 
     users.${userSettings.username} = { pkgs, ... }: {
       imports = [ ./default.nix ];
@@ -40,10 +40,12 @@ in {
       messaging.enable = true;
       kitty.enable = true;
       rclone.enable = true;
+      cursor.enable = true;
+      windsurf.enable = true;
       programs.bash.enable = true;
 
       programs.neovim.enable = true;
-      home.packages = with pkgs; [ nixfmt-classic ];
+      home.packages = with pkgs; [ nixfmt ];
 
       programs.home-manager.enable = true;
       programs.git = {

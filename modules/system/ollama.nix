@@ -1,10 +1,11 @@
-{ config, lib, pkgs-unstable, ... }: {
+{ config, lib, unstable, ... }: {
   options = { ollama.enable = lib.mkEnableOption "enables ollama support"; };
 
-  config = lib.mkIf config.ollama.enable { 
+  config = lib.mkIf config.ollama.enable {
     services.ollama = {
-      package = pkgs-unstable.ollama;
-      enable = true; 
+      package = unstable.ollama;
+      enable = true;
+      host = "0.0.0.0";
     };
   };
 }

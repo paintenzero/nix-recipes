@@ -1,7 +1,10 @@
 { config, lib, pkgs, ... }: {
-  options = { cuda.enable = lib.mkEnableOption "enables cuda support"; };
+  options = { 
+    cuda.enable = lib.mkEnableOption "enables cuda support";
+  };
 
   config = lib.mkIf config.cuda.enable {
+		nvidia.enable = true;
     build-essentials.enable = true;
     environment.systemPackages = with pkgs; [
       cudatoolkit
