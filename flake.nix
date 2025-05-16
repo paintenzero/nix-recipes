@@ -14,11 +14,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     catppuccin.url = "github:catppuccin/nix";
+    impermanence.url = "github:nix-community/impermanence";
   };
 
   #### OUTPUTS
-  outputs = { self, nixpkgs, nixpkgs-unstable, unstable, home-manager
-    , catppuccin, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, unstable, home-manager, impermanence, catppuccin, ... }@inputs:
     let
       inherit (self) outputs;
 
@@ -32,6 +32,7 @@
             useGlobalPkgs = true;
           };
         }
+        impermanence.nixosModules.impermanence
       ];
 
       getPkgs =
@@ -64,15 +65,21 @@
       nixosConfigurations = {
 
         sbnix = nixpkgs.lib.nixosSystem {
-
           specialArgs = sharedArgs // getPkgs {
             inherit nixpkgs nixpkgs-unstable unstable;
             system = "x86_64-linux";
             cudaSupport = true;
           };
-
           modules = shared-modules ++ [ ./hosts/mainpc.nix ./users/sergey.nix ];
         }; # end of host sbnix
+
+        vmnix = nixpkgs.lib.nixosSystem {
+          specialArgs = sharedArgs // getPkgs {
+            inherit nixpkgs nixpkgs-unstable unstable;
+            system = "x86_64-linux";
+          };
+          modules = shared-modules ++ [ ./hosts/vm.nix ./users/vm-user.nix ];
+        }; # end of host vmnix
       }; # end of nixosConfigurations
     }; # end of outputs
 

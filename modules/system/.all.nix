@@ -7,5 +7,6 @@
     ./cuda.nix
     ./ollama.nix
     ./3dprint.nix
+    ./rdp.nix
   ];
 }
