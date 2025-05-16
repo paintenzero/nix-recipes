@@ -42,6 +42,7 @@ in {
       rclone.enable = true;
       cursor.enable = true;
       windsurf.enable = true;
+      zed-editor.enable = true;
       programs.bash.enable = true;
 
       programs.neovim.enable = true;

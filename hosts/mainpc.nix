@@ -6,10 +6,11 @@ let
     hostname = "sbnix";
     timezone = "Asia/Nicosia";
     locale = "en_US.UTF-8";
+    secretsFile = ../secrets/secrets.yaml;
   };
 in {
 
-  imports = [ ./default.nix ];
+  imports = [ ./default.nix inputs.sops-nix.nixosModules.sops ];
 
   ### Hardware
   boot.initrd.availableKernelModules =
@@ -29,6 +30,7 @@ in {
     device = "/dev/disk/by-label/NIX";
     fsType = "btrfs";
     options = [ "subvol=home" "compress=zstd" ];
+    neededForBoot = true; # Because we keep sops secret file here
   };
 
   fileSystems."/var/lib/docker" = {
@@ -49,11 +51,33 @@ in {
     options = [ "fmask=0022" "dmask=0022" ];
   };
 
+  fileSystems."/share" = {
+    device = "//192.168.2.9/SHARE";
+    fsType = "cifs";
+    options = let
+      automount_opts =
+        "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
+    in [
+      "${automount_opts},credentials=${
+        config.sops.secrets."samba/home_server/credentials".path
+      },file_mode=0666,dir_mode=0777"
+    ];
+  };
+
   swapDevices = [ ];
 
   nixpkgs.hostPlatform = lib.mkDefault systemSettings.system;
   hardware.cpu.amd.updateMicrocode =
     lib.mkDefault config.hardware.enableRedistributableFirmware;
+
+  sops = {
+    defaultSopsFile = systemSettings.secretsFile;
+    defaultSopsFormat = "yaml";
+    age.keyFile = "/home/sergey/.config/sops/age/keys.txt";
+    sops.secrets = {
+      "samba/home_server/credentials" = { };
+    };
+  }
 
   ### Software
   boot.loader = {
@@ -111,20 +135,8 @@ in {
   security.sudo.wheelNeedsPassword = false;
 
   environment.systemPackages = with pkgs;
-    [
-      vim
-      wget
-      curl
-      home-manager
-      git
-      htop
-      pciutils
-      lm_sensors
-      vulkan-tools
-      cachix
-      ripgrep
-      btop
-    ] ++ [ unstable.devenv unstable.libreoffice ];
+    [ home-manager git pciutils lm_sensors vulkan-tools ripgrep htop btop ]
+    ++ [ unstable.devenv unstable.libreoffice ];
 
   programs.appimage = {
     enable = true;

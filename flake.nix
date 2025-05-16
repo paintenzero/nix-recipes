@@ -15,10 +15,15 @@
     };
     catppuccin.url = "github:catppuccin/nix";
     impermanence.url = "github:nix-community/impermanence";
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   #### OUTPUTS
-  outputs = { self, nixpkgs, nixpkgs-unstable, unstable, home-manager, impermanence, catppuccin, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, unstable, home-manager
+    , impermanence, catppuccin, sops-nix, ... }@inputs:
     let
       inherit (self) outputs;
 

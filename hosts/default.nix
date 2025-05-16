@@ -1,4 +1,4 @@
-{ lib, config, pkgs, pkgs-stable, ... }: {
+{ lib, config, pkgs, unstable, ... }: {
   imports = [ ../modules/system/.all.nix ];
 
   nix.settings = {
@@ -21,6 +21,16 @@
       "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw="
     ];
   };
+
+  environment.systemPackages = with unstable; [
+    samba
+    cifs-utils
+    sops
+    cachix
+    vim
+    wget
+    curl
+  ];
 
   services.timesyncd.enable = true;
 
