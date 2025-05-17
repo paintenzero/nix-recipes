@@ -70,16 +70,14 @@ in {
   hardware.cpu.amd.updateMicrocode =
     lib.mkDefault config.hardware.enableRedistributableFirmware;
 
+  ### Software
   sops = {
     defaultSopsFile = systemSettings.secretsFile;
     defaultSopsFormat = "yaml";
     age.keyFile = "/home/sergey/.config/sops/age/keys.txt";
-    sops.secrets = {
-      "samba/home_server/credentials" = { };
-    };
-  }
+    secrets = { "samba/home_server/credentials" = { }; };
+  };
 
-  ### Software
   boot.loader = {
     grub = {
       enable = true;
