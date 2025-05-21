@@ -1,12 +1,15 @@
-{ config, lib, pkgs, ... }: {
+{ config, lib, packages, ... }: {
   options = { 
     cuda.enable = lib.mkEnableOption "enables cuda support";
   };
 
   config = lib.mkIf config.cuda.enable {
+    nixpkgs.config = {
+      allowUnfree = true;
+    };
+    
 		nvidia.enable = true;
-    build-essentials.enable = true;
-    environment.systemPackages = with pkgs; [
+    environment.systemPackages = with packages.stable; [
       cudatoolkit
       cudaPackages.cuda_cudart
       cudaPackages.cuda_nvcc

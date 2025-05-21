@@ -1,6 +1,4 @@
-{ inputs, ... }: let
-  username = "sergey";
-in {
+{ inputs, username, ... }: {
   users.mutableUsers = false;
   users.users.${username} = {
     isNormalUser = true;

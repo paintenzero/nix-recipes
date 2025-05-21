@@ -8,7 +8,6 @@ let
     secretsFile = ../secrets/services.yaml;
     keyFile = "/persist/keys/age_key.txt";
   };
-   var = builtins.trace "foo" "bar";
 in {
   imports = [
     "${modulesPath}/installer/scan/not-detected.nix"

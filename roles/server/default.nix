@@ -1,4 +1,4 @@
-{ lib, config, impermanence, ... }: {
+{ lib, config, ... }: {
   imports = [
     ./home.nix
   ];

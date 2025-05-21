@@ -7,10 +7,10 @@
 
   #### INPUTS
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-24.11";
+    nixpkgs.url = "nixpkgs/nixos-25.05";
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.11";
+      url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     impermanence.url = "github:nix-community/impermanence";
@@ -21,66 +21,73 @@
   };
 
   #### OUTPUTS
-  outputs = inputs@{
-    self,
-    nixpkgs,
-    nixpkgs-master,
-    home-manager,
-    impermanence,
-    sops-nix
-  }: let
-    mkPkgs = system: {
-      stablePkgs = import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-      };
-    };
-    mkHome = nixos-config: home-manager.lib.homeManagerConfiguration {
-      pkgs = (mkPkgs nixos-config.system).stablePkgs;
-      modules = [
-        {
-	  home = {
-	    username = "sergey";
-	    homeDirectory = "/home/sergey";
-	  };
-	}
-	nixos-config.config.home-manager.users.${nixos-config.config.sergey.username}
-      ];
-    };
-  in rec {
-
-    ### COMPUTER CONFIGURATIONS
-    nixosConfigurations = let
-      # Function to create nixosConfigurations 
-      mkNixosConfiguration = { name, system ? "x86_64-linux", cudaSupport ? false }: {
-        "${name}" = nixpkgs.lib.makeOverridable nixpkgs.lib.nixosSystem {
+  outputs = inputs@{ self, nixpkgs, nixpkgs-master, home-manager, impermanence
+    , sops-nix }:
+    let
+      mkPkgs = system: {
+        stable = import nixpkgs {
           inherit system;
-          specialArgs = { 
-            inherit system inputs;
-          };
-          modules = [
-	    home-manager.nixosModules.home-manager {
-        home-manager = {
-          useUserPackages = true;
-          useGlobalPkgs = true;
+          config.allowUnfree = true;
         };
-	    }
-	    impermanence.nixosModules.impermanence
-            sops-nix.nixosModules.sops
-            (import (./modules/system/all.nix)) # Import all system modules options
-            (import (./hosts/all.nix))
-            (import (./hosts + "/${name}.nix"))
-          ];     
+        master = import nixpkgs-master {
+          inherit system;
+          config.allowUnfree = true;
         };
       };
-    in { }
-    // (mkNixosConfiguration { name = "sbsrv"; })
-    ; # end of nixosConfigurations
+      mkHome = nixos-config:
+        home-manager.lib.homeManagerConfiguration {
+          pkgs = (mkPkgs nixos-config.system).stable;
+          modules = [
+            {
+              home = {
+                username = "sergey";
+                homeDirectory = "/home/sergey";
+              };
+            }
+            nixos-config.config.home-manager.users.${nixos-config.config.sergey.username}
+          ];
+        };
+    in rec {
 
-    ### HOME MANAGER STUFF
-    homeConfigurations = {
-      "sergey@sbsrv" = mkHome nixosConfigurations."sbsrv";
-    };
+      ### COMPUTER CONFIGURATIONS
+      nixosConfigurations = let
+        # Function to create nixosConfigurations 
+        mkNixosConfiguration =
+          { name, system ? "x86_64-linux", cudaSupport ? false }: {
+            "${name}" = nixpkgs.lib.makeOverridable nixpkgs.lib.nixosSystem {
+              inherit system;
+              specialArgs = {
+                inherit system inputs;
+                username = "sergey";
+                packages = mkPkgs system;
+              };
+              modules = [
+                home-manager.nixosModules.home-manager
+                {
+                  home-manager = {
+                    useUserPackages = true;
+                    useGlobalPkgs = true;
+                  };
+                }
+                impermanence.nixosModules.impermanence
+                sops-nix.nixosModules.sops
+                (import
+                  (./modules/system/all.nix)) # Import all system modules options
+                (import (./hosts/all.nix))
+                (import (./hosts + "/${name}.nix"))
+              ];
+            };
+          };
+      in { } // (mkNixosConfiguration { name = "sbsrv"; })
+      // (mkNixosConfiguration {
+        name = "sbnix";
+      }); # end of nixosConfigurations
 
-  }; # end of outputs
+      ### HOME MANAGER STUFF
+      homeConfigurations = {
+        "sergey@sbsrv" = mkHome nixosConfigurations."sbsrv";
+        "sergey@sbnix" = mkHome nixosConfigurations."sbnix";
+      };
+
+    }; # end of outputs
 }

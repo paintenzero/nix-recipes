@@ -1,3 +1,5 @@
+# This file is included in all hosts in flake.nix
+
 { lib, config, pkgs, ... }: {
 
   nix.settings = {
@@ -24,6 +26,7 @@
   environment.systemPackages = with pkgs; [
     sops
     cachix
+    git
   ];
 
   services.timesyncd.enable = true;
