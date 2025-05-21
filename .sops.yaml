@@ -1,7 +1,9 @@
 keys:
   - &sergey age1rldsrqyykq6d2a4xlgntcydez2yu3udsvpndvz5fynuhwfv3xdysuw70ac
+  - &services age1ngtqmruwk40k2h3r2s8x4rakaeca3ahdmymt7dntyyc2954ucvvs9dkrx3
 creation_rules:
   - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
     key_groups:
       - age:
         - *sergey
+        - *services

@@ -1,5 +1,4 @@
-{ lib, config, pkgs, unstable, ... }: {
-  imports = [ ../modules/system/.all.nix ];
+{ lib, config, pkgs, ... }: {
 
   nix.settings = {
 
@@ -22,14 +21,9 @@
     ];
   };
 
-  environment.systemPackages = with unstable; [
-    samba
-    cifs-utils
+  environment.systemPackages = with pkgs; [
     sops
     cachix
-    vim
-    wget
-    curl
   ];
 
   services.timesyncd.enable = true;

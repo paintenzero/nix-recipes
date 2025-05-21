@@ -1,19 +1,18 @@
 # Inspired by
+# https://gitlab.com/kylesferrazza/nix-configs
 # https://github.com/Misterio77/nix-starter-configs/blob/main/standard/flake.nix
 # https://github.com/shyonae/nixos-main-config/blob/main/flake.nix
 {
-  description = "My nixos system";
+  description = "sebi's nix configs";
 
   #### INPUTS
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-24.11";
-    nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
-    unstable.url = "nixpkgs/nixpkgs-unstable";
+    nixpkgs-master.url = "github:NixOS/nixpkgs/master";
     home-manager = {
       url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    catppuccin.url = "github:catppuccin/nix";
     impermanence.url = "github:nix-community/impermanence";
     sops-nix = {
       url = "github:Mic92/sops-nix";
@@ -22,70 +21,66 @@
   };
 
   #### OUTPUTS
-  outputs = { self, nixpkgs, nixpkgs-unstable, unstable, home-manager
-    , impermanence, catppuccin, sops-nix, ... }@inputs:
-    let
-      inherit (self) outputs;
-
-      sharedArgs = inputs // { inherit inputs outputs; };
-
-      shared-modules = [
-        home-manager.nixosModules.home-manager
+  outputs = inputs@{
+    self,
+    nixpkgs,
+    nixpkgs-master,
+    home-manager,
+    impermanence,
+    sops-nix
+  }: let
+    mkPkgs = system: {
+      stablePkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
+    };
+    mkHome = nixos-config: home-manager.lib.homeManagerConfiguration {
+      pkgs = (mkPkgs nixos-config.system).stablePkgs;
+      modules = [
         {
-          home-manager = {
-            useUserPackages = true;
-            useGlobalPkgs = true;
-          };
-        }
-        impermanence.nixosModules.impermanence
+	  home = {
+	    username = "sergey";
+	    homeDirectory = "/home/sergey";
+	  };
+	}
+	nixos-config.config.home-manager.users.${nixos-config.config.sergey.username}
       ];
+    };
+  in rec {
 
-      getPkgs =
-        { nixpkgs, nixpkgs-unstable, unstable, system, cudaSupport ? false }: {
-          pkgs = import nixpkgs {
-            inherit system;
-            config = {
-              allowUnfree = true;
-              cudaSupport = cudaSupport;
-            };
+    ### COMPUTER CONFIGURATIONS
+    nixosConfigurations = let
+      # Function to create nixosConfigurations 
+      mkNixosConfiguration = { name, system ? "x86_64-linux", cudaSupport ? false }: {
+        "${name}" = nixpkgs.lib.makeOverridable nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { 
+            inherit system inputs;
           };
-          pkgs-unstable = import nixpkgs-unstable {
-            inherit system;
-            config = {
-              allowUnfree = true;
-              cudaSupport = cudaSupport;
-            };
-          };
-          unstable = import unstable {
-            inherit system;
-            config = {
-              allowUnfree = true;
-              cudaSupport = cudaSupport;
-            };
-          };
+          modules = [
+	    home-manager.nixosModules.home-manager {
+        home-manager = {
+          useUserPackages = true;
+          useGlobalPkgs = true;
         };
+	    }
+	    impermanence.nixosModules.impermanence
+            sops-nix.nixosModules.sops
+            (import (./modules/system/all.nix)) # Import all system modules options
+            (import (./hosts/all.nix))
+            (import (./hosts + "/${name}.nix"))
+          ];     
+        };
+      };
+    in { }
+    // (mkNixosConfiguration { name = "sbsrv"; })
+    ; # end of nixosConfigurations
 
-    in {
+    ### HOME MANAGER STUFF
+    homeConfigurations = {
+      "sergey@sbsrv" = mkHome nixosConfigurations."sbsrv";
+    };
 
-      nixosConfigurations = {
-
-        sbnix = nixpkgs.lib.nixosSystem {
-          specialArgs = sharedArgs // getPkgs {
-            inherit nixpkgs nixpkgs-unstable unstable;
-            system = "x86_64-linux";
-            cudaSupport = true;
-          };
-          modules = shared-modules ++ [ ./hosts/mainpc.nix ./users/sergey.nix ];
-        }; # end of host sbnix
-
-        vmnix = nixpkgs.lib.nixosSystem {
-          specialArgs = sharedArgs // getPkgs {
-            inherit nixpkgs nixpkgs-unstable unstable;
-            system = "x86_64-linux";
-          };
-          modules = shared-modules ++ [ ./hosts/vm.nix ./users/vm-user.nix ];
-        }; # end of host vmnix
-      }; # end of nixosConfigurations
-    }; # end of outputs
-
+  }; # end of outputs
 }
