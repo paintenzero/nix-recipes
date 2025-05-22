@@ -1,5 +1,8 @@
-{ inputs, username, ... }: {
+{ inputs, username, packages, ... }: {
   home-manager = {
+    extraSpecialArgs = {
+      inherit packages;
+    };
     users.${username} = { pkgs, ... }: {
       imports = [
         ../../modules/home/all.nix
@@ -7,6 +10,7 @@
     	home.packages = with pkgs; [ nixfmt ];
 			
       vscode.enable = true;
+      cursor.enable = true;
       
       programs.git = {
         enable = true;

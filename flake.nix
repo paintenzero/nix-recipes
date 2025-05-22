@@ -24,6 +24,7 @@
   outputs = inputs@{ self, nixpkgs, nixpkgs-master, home-manager, impermanence
     , sops-nix }:
     let
+      username = "sergey";
       mkPkgs = system: {
         stable = import nixpkgs {
           inherit system;
@@ -32,6 +33,7 @@
         master = import nixpkgs-master {
           inherit system;
           config.allowUnfree = true;
+          overlays = [ (import ./overlays/cursor.nix) ];
         };
       };
       mkHome = nixos-config:
@@ -58,7 +60,7 @@
               inherit system;
               specialArgs = {
                 inherit system inputs;
-                username = "sergey";
+                inherit username;
                 packages = mkPkgs system;
               };
               modules = [
@@ -69,6 +71,7 @@
                     useGlobalPkgs = true;
                   };
                 }
+                { home-manager.users.${username}.nixpkgs.overlays = [ myoverlay ]; }
                 impermanence.nixosModules.impermanence
                 sops-nix.nixosModules.sops
                 (import

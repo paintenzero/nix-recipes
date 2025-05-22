@@ -1,4 +1,4 @@
-{ config, lib, modulesPath, pkgs, ... }:
+{ config, lib, modulesPath, pkgs, packages, ... }:
 let
   systemSettings = {
     system = "x86_64-linux";
