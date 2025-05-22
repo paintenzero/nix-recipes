@@ -1,16 +1,16 @@
-{ config, lib, pkgs, unstable, ... }: {
+{ config, lib, pkgs, packages, ... }: {
 
   options = { nvidia.enable = lib.mkEnableOption "Installs nvidia drivers"; };
 
   config = let
 
-    mesa = unstable.mesa; # .override {
+    mesa = pkgs.mesa; # .override {
     # galliumDrivers = [ "zink" ];
     # };
 
   in lib.mkIf config.nvidia.enable {
 
-    environment.systemPackages = [ unstable.mesa-demos unstable.libGL ];
+    environment.systemPackages = [ pkgs.mesa-demos pkgs.libGL pkgs.vulkan-tools ];
 
     environment.variables = {
       VDPAU_DRIVER = "va_gl";
@@ -20,7 +20,7 @@
     hardware = {
       graphics = {
         package = mesa;
-        extraPackages = [ unstable.libvdpau-va-gl ];
+        extraPackages = [ pkgs.libvdpau-va-gl ];
         enable = true;
         enable32Bit = true;
       };
@@ -30,7 +30,7 @@
         open = true;
         nvidiaSettings = true;
         # package = config.boot.kernelPackages.nvidiaPackages.beta;
-        package = unstable.linuxPackages.nvidiaPackages.latest;
+        package = packages.stable.linuxPackages.nvidiaPackages.latest;
         # package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
         # 	version = "570.144";
         # 	sha256_64bit = lib.fakeSha256;
@@ -40,6 +40,7 @@
         # 	persistencedSha256 = lib.fakeSha256;
         # };
         forceFullCompositionPipeline = false;
+        powerManagement.enable = true;
       };
     };
     services.xserver.videoDrivers = [ "nvidia" ];

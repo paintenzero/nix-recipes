@@ -1,9 +1,9 @@
-{ lib, config, unstable, ... }: {
+{ lib, config, packages, ... }: {
   options = {
     cursor.enable = lib.mkEnableOption "Enables Cursor for the user";
   };
 
   config = lib.mkIf config.cursor.enable {
-    home.packages = with unstable; [ code-cursor ];
+    home.packages = [ packages.cursor-pkgs.code-cursor ];
   };
 }
