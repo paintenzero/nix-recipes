@@ -40,6 +40,7 @@
         # 	persistencedSha256 = lib.fakeSha256;
         # };
         forceFullCompositionPipeline = false;
+        powerManagement.enable = true;
       };
     };
     services.xserver.videoDrivers = [ "nvidia" ];

@@ -8,7 +8,8 @@
   #### INPUTS
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-25.05";
-    nixpkgs-master.url = "github:NixOS/nixpkgs/master";
+    nixpkgs-master.url = "github:nixos/nixpkgs/master";
+    code-cursor.url = "github:nixos/nixpkgs/c0099261f9316d75150231b62289befda8911de5";
     home-manager = {
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -21,8 +22,7 @@
   };
 
   #### OUTPUTS
-  outputs = inputs@{ self, nixpkgs, nixpkgs-master, home-manager, impermanence
-    , sops-nix }:
+  outputs = { self, nixpkgs, home-manager, impermanence, sops-nix, ... }@inputs:
     let
       username = "sergey";
       mkPkgs = system: {
@@ -30,10 +30,14 @@
           inherit system;
           config.allowUnfree = true;
         };
-        master = import nixpkgs-master {
+        master = import inputs.nixpkgs-master {
           inherit system;
           config.allowUnfree = true;
-          overlays = [ (import ./overlays/cursor.nix) ];
+        };
+        cursor-pkgs = import inputs.code-cursor {
+          inherit system;
+          config.allowUnfree = true;
+          # overlays = [ (import ./overlays/cursor.nix) ]; # Didn't work but not needed since I'm using forked version of nixpkgs master
         };
       };
       mkHome = nixos-config:

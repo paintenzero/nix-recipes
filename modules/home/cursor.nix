@@ -4,6 +4,6 @@
   };
 
   config = lib.mkIf config.cursor.enable {
-    home.packages = [ packages.master.code-cursor ];
+    home.packages = [ packages.cursor-pkgs.code-cursor ];
   };
 }
