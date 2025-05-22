@@ -71,7 +71,6 @@
                     useGlobalPkgs = true;
                   };
                 }
-                { home-manager.users.${username}.nixpkgs.overlays = [ myoverlay ]; }
                 impermanence.nixosModules.impermanence
                 sops-nix.nixosModules.sops
                 (import
