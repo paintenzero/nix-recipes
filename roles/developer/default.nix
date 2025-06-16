@@ -4,10 +4,10 @@
 	];
 
 	programs.direnv = {
-    enable = true;
-    enableBashIntegration = true;
-    package = pkgs.direnv;
-  };
+		enable = true;
+		enableBashIntegration = true;
+		package = pkgs.direnv;
+	};
 
 	environment.systemPackages = with pkgs; [
 		gcc12
@@ -21,6 +21,6 @@
 		pkg-config
 		binutils
 		meson
-    devenv
+		devenv
 	];
 }

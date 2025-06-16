@@ -1,9 +1,9 @@
-{ lib, config, pkgs, ... }: {
+{ lib, config, packages, ... }: {
   options.fonts.enable = lib.mkEnableOption "Enables fonts";
   config = lib.mkIf config.fonts.enable {
     fonts.enableDefaultPackages = true;
     fonts.enableGhostscriptFonts = true;
-    fonts.packages = with pkgs; [
+    fonts.packages = with packages.stable; [
       corefonts
       vistafonts
       noto-fonts

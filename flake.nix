@@ -88,6 +88,7 @@
          // (mkNixosConfiguration { name = "sbsrv"; })
          // (mkNixosConfiguration { name = "sbnix"; })
          // (mkNixosConfiguration { name = "rpnix1"; system = "aarch64-linux"; })
+         // (mkNixosConfiguration { name = "worklaptop"; })
       ; # end of nixosConfigurations
 
       ### HOME MANAGER STUFF

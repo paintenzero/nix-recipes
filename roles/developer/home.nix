@@ -10,7 +10,7 @@
     	home.packages = with pkgs; [ nixfmt ];
 			
       vscode.enable = true;
-      cursor.enable = true;
+#      cursor.enable = true;
       
       programs.git = {
         enable = true;
