@@ -84,10 +84,11 @@
               ];
             };
           };
-      in { } // (mkNixosConfiguration { name = "sbsrv"; })
-      // (mkNixosConfiguration {
-        name = "sbnix";
-      }); # end of nixosConfigurations
+      in { } 
+         // (mkNixosConfiguration { name = "sbsrv"; })
+         // (mkNixosConfiguration { name = "sbnix"; })
+         // (mkNixosConfiguration { name = "rpnix1"; system = "aarch64-linux"; })
+      ; # end of nixosConfigurations
 
       ### HOME MANAGER STUFF
       homeConfigurations = {
