@@ -79,6 +79,7 @@ in {
     hostName = systemSettings.hostname;
     networkmanager.enable = true;
     firewall.enable = true;
+    firewall.allowedTCPPorts = [ 1080 ];
   };
 
   environment.systemPackages = with pkgs; [ 
@@ -100,6 +101,7 @@ in {
     secrets = {
       "zurg_token" = {};
       "sim_reader/config" = {};
+      "xray/config" = {};
     };
   };
 
