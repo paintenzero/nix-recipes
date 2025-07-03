@@ -18,6 +18,7 @@ in {
     ../roles/xray
   ];
   nixpkgs.hostPlatform = lib.mkDefault systemSettings.system;
+  hardware.bluetooth.enable = true;
 
   ### MOUNTS
   fileSystems."/" = {
@@ -57,11 +58,11 @@ in {
     options = [ "fmask=0022" "dmask=0022" ];
   };
 
-
   ### BOOTLOADER
   efi.enable = true;
 
-  boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
+  boot.initrd.availableKernelModules =
+    [ "nvme" "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelPackages = pkgs.linuxPackages;
   boot.kernelModules = [ "kvm-intel" ];
@@ -97,9 +98,9 @@ in {
     defaultSopsFile = systemSettings.secretsFile;
     defaultSopsFormat = "yaml";
     age.keyFile = systemSettings.keyFile;
-    secrets = { 
-      "samba/home_server/credentials" = { }; 
-      "xray/config" = {};
+    secrets = {
+      "samba/home_server/credentials" = { };
+      "xray/config" = { };
     };
   };
 
@@ -110,14 +111,25 @@ in {
   };
 
   security.sudo.wheelNeedsPassword = false;
-  
+
   kde.enable = true;
   appimage.enable = true;
   fonts.enable = true;
   services.tailscale.enable = true;
 
-  environment.systemPackages = with pkgs;
-    [ git pciutils lm_sensors ripgrep htop btop devenv ];
+  environment.systemPackages = with pkgs; [
+    git
+    pciutils
+    lm_sensors
+    ripgrep
+    htop
+    btop
+    devenv
+    minicom
+    mc
+    squashfsTools
+    wireshark
+  ];
   programs.direnv = {
     enable = true;
     enableBashIntegration = true;
