@@ -18,7 +18,11 @@ in {
     ../roles/xray
   ];
   nixpkgs.hostPlatform = lib.mkDefault systemSettings.system;
-  hardware.bluetooth.enable = true;
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+  };
+  hardware.sane = { enable = true; };
 
   ### MOUNTS
   fileSystems."/" = {
@@ -129,9 +133,15 @@ in {
     mc
     squashfsTools
     wireshark
+    sshfs
+    iperf3
+    tcpdump
+    openfpgaloader
+    dbeaver-bin
   ];
   programs.direnv = {
     enable = true;
     enableBashIntegration = true;
   };
+  programs.fuse = { userAllowOther = true; };
 }

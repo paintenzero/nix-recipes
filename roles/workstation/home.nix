@@ -12,7 +12,7 @@
       kitty.enable = true;
       messaging.enable = true;
 
-      home.packages = with packages.stable; [ remmina ];
+      home.packages = with packages.stable; [ remmina rustdesk ];
     };
   };
 }

@@ -1,7 +1,5 @@
 { lib, config, pkgs, ... }: {
-  imports = [
-    ./home.nix
-  ];
+  imports = [ ./home.nix ];
 
   programs.firefox.enable = true;
   environment.systemPackages = with pkgs; [
@@ -10,6 +8,8 @@
     htop
     btop
     lm_sensors
+    qalculate-qt
+    openvpn
   ];
 
 }

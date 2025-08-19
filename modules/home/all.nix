@@ -1,9 +1,3 @@
 { ... }: {
-  imports = [
-    ./messaging.nix
-    ./vscode.nix
-    ./cursor.nix
-    ./kitty.nix
-    ./rclone.nix
-  ];
+  imports = [ ./messaging.nix ./vscode.nix ./kitty.nix ./rclone.nix ];
 }
