@@ -1,7 +1,7 @@
 { inputs, username, packages, ... }: {
   users.users.${username} = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ];
+    extraGroups = [ "wheel" "dialout" ];
     initialPassword = username;
   };
 

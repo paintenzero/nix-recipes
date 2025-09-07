@@ -138,6 +138,7 @@ in {
     tcpdump
     openfpgaloader
     dbeaver-bin
+    arduino
   ];
   programs.direnv = {
     enable = true;
